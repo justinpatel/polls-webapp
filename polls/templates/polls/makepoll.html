@@ -1,0 +1,10 @@
+{% if q_text %}
+{{ q_text }}
+{% endif %}
+
+<form action="{% url 'makepoll' %}" method="POST">
+    {% csrf_token %}
+    <input type="text" placeholder="Enter Question" name="q_text">
+    <input type="text" placeholder="Enter choices separated by comma" name="choices">
+    <input type="submit">
+</form>

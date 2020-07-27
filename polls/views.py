@@ -3,6 +3,9 @@ from django.urls import reverse
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from .models import Question, Choice
+from django.utils import timezone
+
+from django.contrib import messages
 
 # Create your views here.
 def index(request):
@@ -39,3 +42,21 @@ def vote(request, question_id):
         print(q.id)
         return HttpResponseRedirect(reverse("results", args=(q.id,)))
 
+def makepoll(request):
+    if request.method == "POST":
+        q_text = request.POST['q_text']
+        choices = request.POST['choices']
+        if q_text and choices:
+            choices_list = choices.split(',')
+            q = Question.objects.create(question_text=q_text, pub_date= timezone.now())
+            for choice in choices_list:
+                Choice.objects.create(question=q, choice_text=choice)
+            messages.success(request, "Successfully added")
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            return render(request, 'polls/makepoll.html',{
+                "q_text": "Please fill up"
+            })
+    return render(request, 'polls/makepoll.html',{
+        "q_text": "Please fill up"
+    })
